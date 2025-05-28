@@ -151,7 +151,7 @@ const Home = () => {
       {/* 主標題 */}
 <img
   id="home-title"
-  src="/ErnestChen.svg"
+  src="/ECFull.svg"
   alt="Ernest Chen"
   className="w-[72px] md:w-[128px] lg:w-[256px] opacity-0 relative z-10"
   style={{ 
