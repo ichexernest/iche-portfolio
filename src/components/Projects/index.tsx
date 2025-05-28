@@ -199,7 +199,7 @@ const Projects: React.FC = () => {
       >
         <GlobalTitle title="Projects" />
         <div className="my-10" />
-        {/* 分類選單 - 只有多個分類時才顯示 */}
+
         {hasMultipleCategories && (
           <div className="flex flex-wrap justify-center bg-white/10 rounded-full gap-2 md:gap-4 mb-8 md:mb-12 p-2">
             {projectCategories.map((category) => (
@@ -222,9 +222,9 @@ const Projects: React.FC = () => {
           </div>
         )}
 
-        {/* 專案卡片區域 */}
+
         <div className="w-full max-w-7xl relative">
-          {/* 導航按鈕 */}
+
           {activeProjects.length > visibleCards && (
             <>
               <button
@@ -245,7 +245,7 @@ const Projects: React.FC = () => {
             </>
           )}
 
-          {/* 卡片容器 */}
+
           <div className="overflow-hidden">
             <div 
               className="flex transition-transform duration-300 ease-out gap-4 md:gap-8 p-4 md:p-8"
@@ -265,7 +265,7 @@ const Projects: React.FC = () => {
             </div>
           </div>
 
-          {/* 頁面指示器 */}
+
           {activeProjects.length > visibleCards && (
             <div className="flex justify-center mt-6 md:mt-8 space-x-2">
               {Array.from({ length: maxIndex + 1 }, (_, i) => (
@@ -280,10 +280,6 @@ const Projects: React.FC = () => {
           )}
         </div>
 
-        {/* 調試信息 - 可以移除 */}
-        <div className="fixed bottom-4 left-4 text-xs bg-black bg-opacity-50 p-2 rounded">
-          寬度: {screenWidth}px | 可見: {visibleCards} | 當前: {currentIndex} | 最大: {maxIndex}
-        </div>
       </section>
     </>
   );

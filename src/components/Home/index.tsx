@@ -142,22 +142,18 @@ const Home = () => {
       id="home"
       className="relative min-h-screen flex flex-col justify-center items-center px-4 py-8 md:px-20 md:py-20 text-center text-white overflow-hidden"
     >
-      {/* Vanta.js 背景 */}
       <div
         ref={vantaRef}
         className="absolute inset-0 z-0"
       />
 
-      {/* 主標題 */}
       <img
         id="home-title"
         src="/ECFull.svg"
         alt="Ernest Chen"
         className="w-[72px] md:w-[128px] lg:w-[256px] opacity-0 relative z-10"
         style={{
-          transform: 'scale(5)',
           transformOrigin: 'center center',
-
           imageRendering: '-webkit-optimize-contrast',
           backfaceVisibility: 'hidden',
           perspective: 1000,
