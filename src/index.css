@@ -1,15 +1,58 @@
 @import "tailwindcss";
 
+:root {
+  --signature-color: #FFF;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Cabinet Grotesk', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion) {
+  .draw-path {
+    animation: none !important;
+    stroke-dasharray: unset !important;
+    fill: var(--signature-color) !important;
+  }
+}
+
+@keyframes grow {
+  0% {
+    stroke-dashoffset: 1px;
+    stroke-dasharray: 0 350px;
+    opacity: 0;
+    fill: transparent;
+  }
+  10% {
+    opacity: 1;
+  }
+  40% {
+    stroke-dasharray: 350px 0;
+  }
+  85% {
+    stroke-dasharray: 350px 0;
+  }
+  100% {
+    stroke-dasharray: 350px 0;           
+    fill: var(--signature-color);         
+  }
+}
+
+
+.draw-path {
+  stroke-dashoffset: 1px;
+  stroke-dasharray: 350px 0;
+  animation: grow 3s ease-in-out forwards;
+  transform-origin: center;
+  stroke: var(--signature-color);
+  fill: transparent;
+  animation-delay: 0s;
 }

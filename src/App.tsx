@@ -5,17 +5,18 @@ import About from './components/About';
 import Skills from './components/Skills';
 import Projects from './components/Projects';
 import Contact from './components/Contact';
-import AnimatedObject from './components/AnimatedObject';
-import ScrollProgress from './components/ScrollProgress';
+import ScrollProgress from './components/Global.scrollProgress';
+import Experience from './components/Experience';
+// import FlashlightEffect from './components/Global.lightEffect';
 
 const App: React.FC = () => {
   const [scrollPercentage, setScrollPercentage] = useState<number>(0);
-  const [isScrollingDown, setIsScrollingDown] = useState<boolean>(true);
   const [lastScrollTop, setLastScrollTop] = useState<number>(0);
-  const [currentSection, setCurrentSection] = useState<string>('home');
+
 
   // Refs for each section
   const homeRef = useRef<HTMLDivElement>(null);
+  const experienceRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
   const skillsRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
@@ -27,41 +28,18 @@ const App: React.FC = () => {
       const scrollPosition = window.scrollY;
       const pageHeight = document.documentElement.scrollHeight - window.innerHeight;
       const calculatedScrollPercentage = Math.min((scrollPosition / pageHeight) * 100, 100);
-      
+
       setScrollPercentage(calculatedScrollPercentage);
-      
-      // Determine scroll direction
-      setIsScrollingDown(scrollPosition > lastScrollTop);
       setLastScrollTop(scrollPosition);
-      
-      // Determine current section
-      const sections = [
-        { id: 'home', ref: homeRef },
-        { id: 'about', ref: aboutRef },
-        { id: 'skills', ref: skillsRef },
-        { id: 'projects', ref: projectsRef },
-        { id: 'contact', ref: contactRef },
-      ];
-      
-      for (const section of sections) {
-        if (!section.ref.current) continue;
-        
-        const sectionTop = section.ref.current.offsetTop - 100;
-        const sectionBottom = sectionTop + section.ref.current.offsetHeight;
-        
-        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-          setCurrentSection(section.id);
-          break;
-        }
-      }
+
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleScroll);
-    
+
     // Initial call to set initial values
     handleScroll();
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
@@ -69,36 +47,39 @@ const App: React.FC = () => {
   }, [lastScrollTop]);
 
   return (
-    <div className="relative overflow-x-hidden">
+    <div className="relative overflow-x-hidden bg-[#0D141E] text-white min-h-screen">
+      {/* <FlashlightEffect /> */}
       <Navbar />
-      
-      <AnimatedObject 
-        scrollPercentage={scrollPercentage} 
-        isScrollingDown={isScrollingDown}
-        currentSection={currentSection}
-      />
-      
+
       <ScrollProgress scrollPercentage={scrollPercentage} />
-      
+
       <div ref={homeRef}>
         <Home />
       </div>
-      
+
       <div ref={aboutRef}>
         <About />
       </div>
-      
+
+      <div ref={experienceRef}>
+        <Experience />
+      </div>
+
       <div ref={skillsRef}>
         <Skills />
       </div>
-      
+
       <div ref={projectsRef}>
         <Projects />
       </div>
-      
-      {/* <div ref={contactRef}>
+
+      <div ref={contactRef}>
         <Contact />
-      </div> */}
+      </div>
+
+      <div className="mt-6 flex justify-center space-x-6 pb-4 text-sm">
+        <p>{new Date().getFullYear()} © Ernest Chen. CC BY-NC-SA 4.0. </p>
+      </div>
     </div>
   );
 };

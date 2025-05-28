@@ -10,7 +10,7 @@ const ScrollProgress: React.FC<ScrollProgressProps> = ({ scrollPercentage }) => 
       className="fixed left-0 bottom-0 h-1 z-40"
       style={{ 
         width: `${scrollPercentage}%`,
-        background: 'linear-gradient(90deg, #f6d365, #fda085)'
+        background: 'linear-gradient(90deg, #ffffff, #70c9eb)'
       }}
     ></div>
   );

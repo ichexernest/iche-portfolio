@@ -2,71 +2,148 @@ import { useEffect, useRef } from 'react';
 import {
   animate,
   createScope,
-  createSpring,
-  createDraggable
 } from 'animejs';
+
+declare global {
+  interface Window {
+    THREE: unknown;
+    VANTA: {
+      DOTS: (options: {
+        el: HTMLElement;
+        mouseControls: boolean;
+        touchControls: boolean;
+        gyroControls: boolean;
+        minHeight: number;
+        minWidth: number;
+        scale: number;
+        scaleMobile: number;
+        color: number;
+        size: number;
+        spacing: number;
+        backgroundColor: number;
+        showLines: boolean;
+      }) => { destroy: () => void };
+    };
+  }
+}
 
 const Home = () => {
   const rootRef = useRef<HTMLElement>(null);
+  const vantaRef = useRef<HTMLDivElement>(null);
+  const vantaEffect = useRef<{ destroy: () => void } | null>(null);
 
+  // 滾動動畫
+  useEffect(() => {
+    const handleScroll = () => {
+      const title = document.getElementById('home-title');
+      if (!title) return;
+
+      const scrollY = window.scrollY;
+      const scale = Math.max(5 - scrollY * 0.005, 0.5);
+      const translateY = -scrollY * 0.01;
+      const opacity = Math.max(1 - scrollY * 0.006, 0);
+
+      title.style.transform = `scale(${scale}) translateY(${translateY}px)`;
+      title.style.opacity = opacity.toString();
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // 初始動畫
   useEffect(() => {
     if (!rootRef.current) return;
 
-    // 建立 scope，把動畫作用限定在 rootRef 裡
-    const scope = createScope({ root: rootRef.current }).add(scope => {
-      // 🎯 淡入動畫
-      animate('#home-avatar', {
+    const scope = createScope({ root: rootRef.current }).add(() => {
+      animate(['#home-title'], {
         opacity: [0, 1],
-        scale: [0.5, 1],
+        scale: [5.5, 5],
         duration: 800,
-        ease: createSpring({ stiffness: 300 })
-      });
-
-      animate(['#home-title', '#home-desc', '#home-btn'], {
-        opacity: [0, 1],
-        translateY: [30, 0],
-        duration: 800,
-        delay: (el, i) => i * 200,
-        ease: 'out(2)'
-      });
-
-      // ✋ 加上拖曳效果（可選）
-      createDraggable('#home-avatar', {
-        container: [0, 0, 0, 0],
-        releaseEase: createSpring({ stiffness: 200 })
+        ease: 'out(2)',
       });
     });
 
-    // ❎ 清理動畫
     return () => scope.revert();
+  }, []);
+
+  // 動態載入 Vanta.js
+  useEffect(() => {
+    const loadScript = (src: string) => {
+      return new Promise<void>((resolve) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => resolve();
+        document.head.appendChild(script);
+      });
+    };
+
+    const initVanta = async () => {
+      try {
+        // 檢查是否已載入
+        if (!window.THREE) {
+          await loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js');
+        }
+        if (!window.VANTA) {
+          await loadScript('https://cdnjs.cloudflare.com/ajax/libs/vanta/0.5.24/vanta.dots.min.js');
+        }
+
+        // 初始化 Vanta 效果
+        if (window.VANTA && vantaRef.current && !vantaEffect.current) {
+          vantaEffect.current = window.VANTA.DOTS({
+            el: vantaRef.current,
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200,
+            minWidth: 200,
+            scale: 1,
+            scaleMobile: 1,
+            color: 0x5a9fbb,
+            size: 1.6,
+            spacing: 46,
+            backgroundColor: 0x6,
+            showLines: false
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load Vanta.js:', error);
+      }
+    };
+
+    initVanta();
+
+    return () => {
+      if (vantaEffect.current) {
+        vantaEffect.current.destroy();
+        vantaEffect.current = null;
+      }
+    };
   }, []);
 
   return (
     <section
       ref={rootRef}
       id="home"
-      className="min-h-screen flex flex-col justify-center items-center p-5 md:p-20 text-center text-white"
-      style={{ background: 'linear-gradient(135deg, #6e8efb, #a777e3)' }}
+      className="relative min-h-screen flex flex-col justify-center items-center px-4 py-8 md:px-20 md:py-20 text-center text-white overflow-hidden"
     >
-      <div id="home-avatar" className="w-36 h-36 rounded-full bg-white mb-8 overflow-hidden opacity-0">
-        <img src="/api/placeholder/150/150" alt="個人頭像" className="w-full h-full object-cover" />
-      </div>
+      {/* Vanta.js 背景 */}
+      <div
+        ref={vantaRef}
+        className="absolute inset-0 z-0"
+      />
 
-      <h1 id="home-title" className="text-4xl md:text-5xl mb-5 font-bold opacity-0 translate-y-8">
-        歡迎來到我的個人網站
-      </h1>
-
-      <p id="home-desc" className="text-lg md:text-xl max-w-2xl mx-auto mb-8 opacity-0 translate-y-8">
-        我是一位網頁開發者，專注於創造令人驚艷的使用者體驗
-      </p>
-
-      <button
-        id="home-btn"
-        className="px-6 py-3 bg-gray-800 text-white rounded opacity-0 translate-y-8"
-        onClick={() => document.querySelector('#about')?.scrollIntoView()}
-      >
-        了解更多
-      </button>
+      {/* 主標題 */}
+      <img
+        id="home-title"
+        src="/ErnestChen.svg"
+        alt="Ernest Chen"
+        className="w-18 md:w-32 lg:w-64 opacity-0 relative z-10"
+        style={{ 
+          transform: 'scale(5)', 
+          transformOrigin: 'center center' 
+        }}
+      />
     </section>
   );
 };
