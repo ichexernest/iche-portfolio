@@ -1,5 +1,5 @@
 'use client';
-
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   SiReact, SiTypescript, SiJavascript, SiHtml5, SiCss3, SiTailwindcss,
@@ -333,13 +333,11 @@ const SkillsPage = () => {
                         }`}
                       disabled={!canScrollUp}
                     >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                      </svg>
+                      <ChevronUp className="w-3 h-3" />
                     </button>
 
                     <span className="text-white/60 self-center text-sm">
-                      {currentPage + 1} / {totalPages}
+                      {currentPage + 1}
                     </span>
 
                     <button
@@ -350,9 +348,7 @@ const SkillsPage = () => {
                         }`}
                       disabled={!canScrollDown}
                     >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <ChevronDown className="w-3 h-3" />
                     </button>
                   </div>
                 )}
@@ -364,7 +360,7 @@ const SkillsPage = () => {
           <div className="w-1/2 h-full flex flex-col justify-center items-center p-4 md:p-10">
             <GlobalTitle title="Skills" />
 
-            <div className="space-y-4 md:space-y-6 w-full max-w-sm">
+            <div className="space-y-4 md:space-y-6 w-full max-w-sm mt-10">
               {skillCategories.map((cat, idx) => (
                 <div
                   key={cat.title}

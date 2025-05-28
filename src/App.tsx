@@ -9,6 +9,8 @@ import ScrollProgress from './components/Global.scrollProgress';
 import Experience from './components/Experience';
 // import FlashlightEffect from './components/Global.lightEffect';
 
+//mobile: Project card
+
 const App: React.FC = () => {
   const [scrollPercentage, setScrollPercentage] = useState<number>(0);
   const [lastScrollTop, setLastScrollTop] = useState<number>(0);

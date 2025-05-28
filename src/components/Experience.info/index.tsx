@@ -11,7 +11,7 @@ const ExperienceInfo = ({ jobs }: { jobs: ExperienceType[] }) => {
       {/* 主要內容區 */}
       <div className="w-full max-w-4xl flex flex-col md:flex-row">
         {/* 公司選單 */}
-        <div className="flex md:flex-col overflow-x-auto md:overflow-x-visible md:w-1/4 mb-6 md:mb-0">
+        <div className="flex md:flex-col overflow-x-auto py-5 md:overflow-x-visible md:w-1/4 mb-6 md:mb-0">
           <div className="flex md:flex-col space-x-2 md:space-x-0 md:space-y-2 min-w-max md:min-w-0">
             {jobs.map((job, idx) => (
               <button
