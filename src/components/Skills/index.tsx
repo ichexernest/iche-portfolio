@@ -23,7 +23,10 @@ const iconMap = {
 };
 
 // Skill categories data
-const skillCategories = [
+const skillCategories: Array<{
+  title: string;
+  skills: Array<{ name: string; iconKey: keyof typeof iconMap }>
+}> = [
   {
     title: 'Foundation',
     skills: [
@@ -76,7 +79,12 @@ const skillCategories = [
 
 
 // Simplified SkillBar component
-const SkillBar = ({ name, iconKey }) => {
+interface SkillBarProps {
+  name: string;
+  iconKey: keyof typeof iconMap;
+}
+
+const SkillBar = ({ name, iconKey }: SkillBarProps) => {
   const Icon = iconMap[iconKey] || FiTool;
 
   return (
@@ -88,26 +96,30 @@ const SkillBar = ({ name, iconKey }) => {
 };
 
 // Vanta.js hook
-const useVantaEffect = (ref) => {
-  const [vantaEffect, setVantaEffect] = useState(null);
+interface VantaEffect {
+  destroy: () => void;
+}
+
+const useVantaEffect = (ref: React.RefObject<HTMLDivElement | null>) => {
+  const [vantaEffect, setVantaEffect] = useState<VantaEffect | null>(null);
 
   useEffect(() => {
     if (vantaEffect || !ref.current) return;
 
-    const loadScript = (src) => {
-      return new Promise((resolve) => {
+    const loadScript = (src: string) => {
+      return new Promise<void>((resolve) => {
         if (src.includes('three.min.js') && window.THREE) {
-          resolve();
+          resolve(void 0);
           return;
         }
         if (src.includes('vanta.net.min.js') && window.VANTA) {
-          resolve();
+          resolve(void 0);
           return;
         }
 
         const script = document.createElement('script');
         script.src = src;
-        script.onload = resolve;
+        script.onload = () => resolve();
         document.head.appendChild(script);
       });
     };
@@ -132,7 +144,7 @@ const useVantaEffect = (ref) => {
             points: 11,
             maxDistance: 15,
             spacing: 19
-          });
+          }) as VantaEffect;
           setVantaEffect(effect);
         }
       } catch (error) {
@@ -142,11 +154,11 @@ const useVantaEffect = (ref) => {
 
     initVanta();
 
-    return () => {
-      if (vantaEffect) {
-        vantaEffect.destroy();
-      }
-    };
+    // return () => {
+    //   if (vantaEffect) {
+    //     vantaEffect.destroy();
+    //   }
+    // };
   }, [ref, vantaEffect]);
 
   return vantaEffect;
@@ -161,7 +173,7 @@ const useScrollControl = (
   setIsSticky: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const lastScrollTime = useRef(0);
-  const scrollTimeout = useRef<number | null>(null);
+  const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const SCROLL_DELAY = 800;
@@ -242,8 +254,8 @@ const useScrollControl = (
 };
 
 const SkillsPage = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const stickyRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLElement>(null!);
+  const stickyRef = useRef<HTMLDivElement>(null!);
   const vantaRef = useRef<HTMLDivElement>(null);
   const [activeCategory, setActiveCategory] = useState(0);
   const [isSticky, setIsSticky] = useState(false);

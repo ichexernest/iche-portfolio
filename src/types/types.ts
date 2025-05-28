@@ -5,4 +5,3 @@ export interface ExperienceType {
   website: string;
   points: string[];
 }
-

@@ -8,6 +8,21 @@ declare global {
   interface Window {
     THREE: unknown;
     VANTA: {
+      NET: (options: {
+        el: HTMLElement;
+        mouseControls: boolean;
+        touchControls: boolean;
+        gyroControls: boolean;
+        backgroundColor: number;
+        minHeight: number;
+        minWidth: number;
+        color: number;
+        scale: number;
+        scaleMobile: number;
+        points: number;
+        maxDistance: number;
+        spacing: number;
+      }) => { destroy: () => void };
       DOTS: (options: {
         el: HTMLElement;
         mouseControls: boolean;
