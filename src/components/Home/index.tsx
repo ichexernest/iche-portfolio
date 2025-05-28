@@ -155,7 +155,6 @@ const Home = () => {
   alt="Ernest Chen"
   className="w-[72px] md:w-[128px] lg:w-[256px] opacity-0 relative z-10"
   style={{ 
-    transform: 'scale(5)', 
     transformOrigin: 'center center',
     imageRendering: 'auto'
   }}
