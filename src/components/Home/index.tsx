@@ -149,16 +149,21 @@ const Home = () => {
       />
 
       {/* 主標題 */}
-<img
-  id="home-title"
-  src="/ECFull.svg"
-  alt="Ernest Chen"
-  className="w-[72px] md:w-[128px] lg:w-[256px] opacity-0 relative z-10"
-  style={{ 
-    transformOrigin: 'center center',
-    imageRendering: 'auto'
-  }}
-/>
+      <img
+        id="home-title"
+        src="/ECFull.svg"
+        alt="Ernest Chen"
+        className="w-[72px] md:w-[128px] lg:w-[256px] opacity-0 relative z-10"
+        style={{
+          transform: 'scale(5)',
+          transformOrigin: 'center center',
+
+          imageRendering: '-webkit-optimize-contrast',
+          backfaceVisibility: 'hidden',
+          perspective: 1000,
+          willChange: 'transform',
+        }}
+      />
     </section>
   );
 };

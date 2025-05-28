@@ -11,7 +11,13 @@ import {
 import { TbBrandCSharp } from "react-icons/tb";
 import { DiMsqlServer } from "react-icons/di";
 import { FiTool } from 'react-icons/fi';
-import GlobalTitle from '../Global.title';
+
+// Global Title Component
+const GlobalTitle = ({ title }: { title: string }) => (
+  <h2 className="text-4xl md:text-6xl font-bold text-white text-center">
+    {title}
+  </h2>
+);
 
 // Icon mapping
 const iconMap = {
@@ -77,7 +83,6 @@ const skillCategories: Array<{
   }
 ];
 
-
 // Simplified SkillBar component
 interface SkillBarProps {
   name: string;
@@ -106,7 +111,8 @@ const useVantaEffect = (ref: React.RefObject<HTMLDivElement | null>) => {
   useEffect(() => {
     if (vantaEffect || !ref.current) return;
 
-    const loadScript = (src: string) => {
+
+        const loadScript = (src: string) => {
       return new Promise<void>((resolve) => {
         if (src.includes('three.min.js') && window.THREE) {
           resolve(void 0);
@@ -123,6 +129,7 @@ const useVantaEffect = (ref: React.RefObject<HTMLDivElement | null>) => {
         document.head.appendChild(script);
       });
     };
+
 
     const initVanta = async () => {
       try {
@@ -153,12 +160,6 @@ const useVantaEffect = (ref: React.RefObject<HTMLDivElement | null>) => {
     };
 
     initVanta();
-
-    // return () => {
-    //   if (vantaEffect) {
-    //     vantaEffect.destroy();
-    //   }
-    // };
   }, [ref, vantaEffect]);
 
   return vantaEffect;
@@ -174,6 +175,7 @@ const useScrollControl = (
 ) => {
   const lastScrollTime = useRef(0);
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
+  const isTransitioning = useRef(false);
 
   useEffect(() => {
     const SCROLL_DELAY = 800;
@@ -181,7 +183,7 @@ const useScrollControl = (
     const maxIdx = skillCategories.length - 1;
 
     const handleWheel = (e: WheelEvent) => {
-      if (!sectionRef.current || !stickyRef.current) return;
+      if (!sectionRef.current || !stickyRef.current || isTransitioning.current) return;
 
       const secRect = sectionRef.current.getBoundingClientRect();
       const stickRect = stickyRef.current.getBoundingClientRect();
@@ -215,9 +217,16 @@ const useScrollControl = (
         if (activeCategory < maxIdx) {
           e.preventDefault();
           lastScrollTime.current = now;
-          scrollTimeout.current = setTimeout(() => {
+          isTransitioning.current = true;
+          
+          // 立即設置過渡狀態，避免 hover 卡頓
+          setTimeout(() => {
             setActiveCategory((prev: number) => prev + 1);
-          }, 100);
+            // 給予足夠時間讓過渡完成
+            setTimeout(() => {
+              isTransitioning.current = false;
+            }, 300);
+          }, 50);
         } else {
           const nextElement = sectionRef.current?.nextElementSibling;
           if (nextElement) {
@@ -229,9 +238,16 @@ const useScrollControl = (
         if (activeCategory > 0) {
           e.preventDefault();
           lastScrollTime.current = now;
-          scrollTimeout.current = setTimeout(() => {
+          isTransitioning.current = true;
+          
+          // 立即設置過渡狀態，避免 hover 卡頓
+          setTimeout(() => {
             setActiveCategory((prev: number) => prev - 1);
-          }, 100);
+            // 給予足夠時間讓過渡完成
+            setTimeout(() => {
+              isTransitioning.current = false;
+            }, 300);
+          }, 50);
         } else {
           const prevElement = sectionRef.current?.previousElementSibling;
           if (prevElement) {
@@ -260,10 +276,21 @@ const SkillsPage = () => {
   const [activeCategory, setActiveCategory] = useState(0);
   const [isSticky, setIsSticky] = useState(false);
   const [mobileSkillIndex, setMobileSkillIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Custom hooks
   useVantaEffect(vantaRef);
   useScrollControl(sectionRef, stickyRef, activeCategory, setActiveCategory, setIsSticky);
+
+  // 監聽類別變化，設置過渡狀態
+  useEffect(() => {
+    setIsTransitioning(true);
+    const timer = setTimeout(() => {
+      setIsTransitioning(false);
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [activeCategory]);
 
   // Mobile navigation functions
   const currentSkills = skillCategories[activeCategory].skills;
@@ -296,6 +323,16 @@ const SkillsPage = () => {
   React.useEffect(() => {
     setMobileSkillIndex(0);
   }, [activeCategory]);
+
+  const handleCategoryClick = (idx: number) => {
+    if (idx !== activeCategory) {
+      setIsTransitioning(true);
+      setActiveCategory(idx);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 200);
+    }
+  };
 
   return (
     <section ref={sectionRef} id="skills" className="relative min-h-screen">
@@ -364,16 +401,18 @@ const SkillsPage = () => {
               {skillCategories.map((cat, idx) => (
                 <div
                   key={cat.title}
-                  className={`flex items-center p-4 md:p-6 space-x-4 rounded-2xl cursor-pointer transition-all transform duration-500 ease-out ${activeCategory === idx
-                      ? 'bg-gradient-to-r from-transparent via-[#0D141E] to-transparent bg-opacity-20 scale-105 shadow-lg border-2'
+                  className={`flex items-center p-4 md:p-6 space-x-4 rounded-2xl cursor-pointer transition-all duration-300 ease-out ${
+                    activeCategory === idx
+                      ? 'bg-gradient-to-r from-transparent via-[#0D141E] to-transparent bg-opacity-20 scale-105 shadow-lg '
                       : 'bg-transparent bg-opacity-10 hover:bg-opacity-20 hover:scale-102'
-                    }`}
-                  onClick={() => setActiveCategory(idx)}
+                  } ${isTransitioning ? 'pointer-events-none' : ''}`}
+                  onClick={() => handleCategoryClick(idx)}
                 >
-                  <h4 className={`font-semibold transition-colors duration-300 ${activeCategory === idx
+                  <h4 className={`font-semibold transition-all duration-300 ${
+                    activeCategory === idx
                       ? 'pl-2 md:pl-6 text-white text-xl md:text-3xl'
                       : 'text-slate-500 text-lg md:text-xl'
-                    }`}>
+                  }`}>
                     {cat.title}
                   </h4>
                 </div>

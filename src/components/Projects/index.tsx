@@ -1,8 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { HiCubeTransparent } from "react-icons/hi2";
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
 import GlobalTitle from '../Global.title';
+
 interface ProjectData {
   id: string;
   title: string;
@@ -34,18 +35,17 @@ const projectCategories: ProjectCategory[] = [
         url: 'https://github.com/ichexernest/lexiread',
         featured: true
       },
-            {
+      {
         id: '2',
         title: 'LIFF Activity Page',
         description: 'Interactive Event Modules',
-        tags: ['React','Canva', 'Tailwind CSS'],
+        tags: ['React', 'Canva', 'Tailwind CSS'],
         date: '2024-01',
         url: 'https://github.com/ichexernest/spin-the-wheel',
         featured: true
       },
     ]
   },
-
 ];
 
 const ProjectCard: React.FC<{ project: ProjectData; index: number }> = ({ project, index }) => {
@@ -65,7 +65,7 @@ const ProjectCard: React.FC<{ project: ProjectData; index: number }> = ({ projec
       glareBorderRadius="16px"
     >
       <div
-      onClick={() => window.open(project.url, '_blank')}  
+        onClick={() => window.open(project.url, '_blank')}  
         className="overflow-hidden cursor-pointer h-96 relative hover:bg-[#000006] hover:rounded-2xl hover:shadow-lg"
         style={{
           animationDelay: `${index * 0.1}s`,
@@ -75,7 +75,7 @@ const ProjectCard: React.FC<{ project: ProjectData; index: number }> = ({ projec
         }}
       >
         <div className="relative h-48 overflow-hidden">
-                    <HiCubeTransparent className="w-24 h-24 absolute left-0 right-0 top-0 bottom-0 m-auto object-cover transition-transform duration-300" />
+          <HiCubeTransparent className="w-24 h-24 absolute left-0 right-0 top-0 bottom-0 m-auto object-cover transition-transform duration-300" />
         </div>
         <div className="p-6">
           <h3 className="text-xl font-bold text-white truncate">{project.title}</h3>
@@ -96,43 +96,68 @@ const ProjectCard: React.FC<{ project: ProjectData; index: number }> = ({ projec
 const Projects: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [activeCategory, setActiveCategory] = useState(projectCategories[0]?.id || '');
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [screenWidth, setScreenWidth] = useState(0);
   
   const activeProjects = projectCategories.find(cat => cat.id === activeCategory)?.projects || [];
   const hasMultipleCategories = projectCategories.length > 1;
   
-  // RWD: 桌面版顯示3張，手機版顯示1.5張
-  const getCardsPerPage = () => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth >= 768 ? 3 : 1.5;
-    }
-    return 3;
+  // 檢測螢幕寬度
+  useEffect(() => {
+    const updateScreenWidth = () => {
+      setScreenWidth(window.innerWidth);
+    };
+    
+    updateScreenWidth();
+    window.addEventListener('resize', updateScreenWidth);
+    return () => window.removeEventListener('resize', updateScreenWidth);
+  }, []);
+
+  // 根據螢幕寬度計算可見卡片數量
+  const getVisibleCards = () => {
+    if (screenWidth >= 1200) return 3; // 大螢幕顯示3張
+    if (screenWidth >= 768) return 2;  // 中等螢幕顯示2張
+    return 1; // 小螢幕顯示1張
   };
-  
-  const [cardsPerPage] = useState(getCardsPerPage());
-  const totalPages = Math.ceil(activeProjects.length / Math.floor(cardsPerPage));
+
+  const visibleCards = getVisibleCards();
+  const maxIndex = Math.max(0, activeProjects.length - visibleCards);
 
   const handleCategoryChange = (categoryId: string) => {
     if (categoryId === activeCategory || isAnimating) return;
     
     setIsAnimating(true);
     setActiveCategory(categoryId);
-    setCurrentPage(0);
+    setCurrentIndex(0);
     setTimeout(() => setIsAnimating(false), 600);
   };
 
-  const handlePageChange = (direction: 'prev' | 'next') => {
+  const handleNavigation = (direction: 'prev' | 'next') => {
     if (isAnimating) return;
     
     setIsAnimating(true);
-    const newPage = direction === 'prev' ? Math.max(0, currentPage - 1) : Math.min(totalPages - 1, currentPage + 1);
-    setCurrentPage(newPage);
-    setTimeout(() => setIsAnimating(false), 600);
+    
+    if (direction === 'prev') {
+      setCurrentIndex(Math.max(0, currentIndex - 1));
+    } else {
+      setCurrentIndex(Math.min(maxIndex, currentIndex + 1));
+    }
+    
+    setTimeout(() => setIsAnimating(false), 300);
   };
 
   const canNavigate = (direction: 'prev' | 'next') => {
-    return direction === 'prev' ? currentPage > 0 : currentPage < totalPages - 1;
+    return direction === 'prev' ? currentIndex > 0 : currentIndex < maxIndex;
+  };
+
+  // 計算每張卡片的寬度 (包含間距)
+  const getCardWidth = () => {
+    if (screenWidth >= 768) {
+      return 320 + 32; // w-80 (320px) + gap-8 (32px)
+    } else {
+      return 256 + 16; // w-64 (256px) + gap-4 (16px)
+    }
   };
 
   return (
@@ -172,8 +197,8 @@ const Projects: React.FC = () => {
         ref={sectionRef}
         className="min-h-screen flex flex-col justify-center items-center p-5 md:p-20 text-center bg-[#000006] text-white relative overflow-hidden"
       >
-                <GlobalTitle title="Projects" />
-
+        <GlobalTitle title="Projects" />
+        <div className="my-10" />
         {/* 分類選單 - 只有多個分類時才顯示 */}
         {hasMultipleCategories && (
           <div className="flex flex-wrap justify-center bg-white/10 rounded-full gap-2 md:gap-4 mb-8 md:mb-12 p-2">
@@ -200,10 +225,10 @@ const Projects: React.FC = () => {
         {/* 專案卡片區域 */}
         <div className="w-full max-w-7xl relative">
           {/* 導航按鈕 */}
-          {totalPages > 1 && (
+          {activeProjects.length > visibleCards && (
             <>
               <button
-                onClick={() => handlePageChange('prev')}
+                onClick={() => handleNavigation('prev')}
                 disabled={!canNavigate('prev') || isAnimating}
                 className="absolute shadow-xl left-0 top-1/2 transform -translate-y-1/2 -translate-x-2 md:-translate-x-4 z-10 p-2 md:p-3 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -211,7 +236,7 @@ const Projects: React.FC = () => {
               </button>
               
               <button
-                onClick={() => handlePageChange('next')}
+                onClick={() => handleNavigation('next')}
                 disabled={!canNavigate('next') || isAnimating}
                 className="absolute shadow-xl right-0 top-1/2 transform -translate-y-1/2 translate-x-2 md:translate-x-4 z-10 p-2 md:p-3 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full text-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -223,32 +248,41 @@ const Projects: React.FC = () => {
           {/* 卡片容器 */}
           <div className="overflow-hidden">
             <div 
-              className="flex transition-transform duration-600 ease-out gap-4 md:gap-8 p-4 md:p-8"
+              className="flex transition-transform duration-300 ease-out gap-4 md:gap-8 p-4 md:p-8"
               style={{
-                transform: `translateX(-${currentPage * (100 / totalPages)}%)`
+                transform: `translateX(-${currentIndex * getCardWidth()}px)`,
+                width: `${activeProjects.length * getCardWidth()}px`
               }}
             >
               {activeProjects.map((project, index) => (
-                <div key={`${activeCategory}-${project.id}`} className="flex-shrink-0 w-64 md:w-80">
-                  <ProjectCard project={project} index={index % Math.floor(cardsPerPage)} />
+                <div 
+                  key={`${activeCategory}-${project.id}`} 
+                  className="flex-shrink-0 w-64 md:w-80"
+                >
+                  <ProjectCard project={project} index={index} />
                 </div>
               ))}
             </div>
           </div>
 
           {/* 頁面指示器 */}
-          {totalPages > 1 && (
+          {activeProjects.length > visibleCards && (
             <div className="flex justify-center mt-6 md:mt-8 space-x-2">
-              {Array.from({ length: totalPages }, (_, i) => (
+              {Array.from({ length: maxIndex + 1 }, (_, i) => (
                 <div
                   key={i}
                   className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${
-                    i === currentPage ? 'bg-white scale-125' : 'bg-white bg-opacity-50'
+                    i === currentIndex ? 'bg-white scale-125' : 'bg-white bg-opacity-50'
                   }`}
                 />
               ))}
             </div>
           )}
+        </div>
+
+        {/* 調試信息 - 可以移除 */}
+        <div className="fixed bottom-4 left-4 text-xs bg-black bg-opacity-50 p-2 rounded">
+          寬度: {screenWidth}px | 可見: {visibleCards} | 當前: {currentIndex} | 最大: {maxIndex}
         </div>
       </section>
     </>
