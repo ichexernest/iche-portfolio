@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { HiCubeTransparent } from "react-icons/hi2";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
 import Tilt from 'react-parallax-tilt';
 import GlobalTitle from '../Global.title';
 
@@ -51,32 +51,40 @@ const projectCategories: ProjectCategory[] = [
 const ProjectCard: React.FC<{ project: ProjectData; index: number }> = ({ project, index }) => {
   return (
     <Tilt
-      className="project-card-tilt"
+      className="project-card-tilt select-none border-1 border-white/15" 
       tiltMaxAngleX={15}
       tiltMaxAngleY={15}
       perspective={1000}
       scale={1.02}
       transitionSpeed={1500}
-      gyroscope={true}
-      glareEnable={true}
+      gyroscope
+      glareEnable
       glareMaxOpacity={0.2}
       glareColor="#70c9eb"
       glarePosition="all"
       glareBorderRadius="16px"
     >
       <div
-        onClick={() => window.open(project.url, '_blank')}  
+        onClick={() => window.open(project.url, '_blank')}
         className="overflow-hidden cursor-pointer h-96 relative hover:bg-[#000006] hover:rounded-2xl hover:shadow-lg"
         style={{
           animationDelay: `${index * 0.1}s`,
           animation: 'slideInUp 0.6s ease-out forwards',
           opacity: 0,
-          transform: 'translateY(30px)'
+          transform: 'translateY(30px)',
         }}
       >
-        <div className="relative h-48 overflow-hidden">
-          <HiCubeTransparent className="w-24 h-24 absolute left-0 right-0 top-0 bottom-0 m-auto object-cover transition-transform duration-300" />
+        {/* Card 右上角的連結 icon */}
+        <div className="absolute top-4 right-4">
+          <ExternalLink className="w-6 h-6 text-white/70 transition-transform hover:scale-140" />
         </div>
+
+        {/* 主圖示區塊 */}
+        <div className="relative h-48 overflow-hidden">
+          <HiCubeTransparent className="w-24 h-24 absolute inset-0 m-auto transition-transform duration-300 hover:scale-105" />
+        </div>
+
+        {/* 文字內容 */}
         <div className="p-6">
           <h3 className="text-xl font-bold text-white truncate">{project.title}</h3>
           <p className="text-white/70 text-sm mb-4 line-clamp-3">{project.description}</p>
