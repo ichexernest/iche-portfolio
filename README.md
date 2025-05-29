@@ -2,7 +2,7 @@
 
 [![Live Demo](https://img.shields.io/badge/Live–Demo-icheportfolio.netlify.app-brightgreen?style=flat-square)](https://icheportfolio.netlify.app/)
 
-![Home Section](./public/theme.png) 
+![Theme](https://github.com/ichexernest/iche-portfolio/blob/main/theme.png) 
 
 > My personal portfolio website, **vibe-coded** with **ChatGPT** & **Claude**.
 
