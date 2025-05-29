@@ -16,6 +16,19 @@ body {
   overflow-x: hidden;
 }
 
+@layer base {
+  /* WebKit (Chrome, Safari, Edge) */
+  *::-webkit-scrollbar {
+    display: none !important;
+  }
+  /* Firefox */
+  * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important; /* IE/Edge Legacy */
+  }
+}
+
+
 @media (prefers-reduced-motion) {
   .draw-path {
     animation: none !important;
