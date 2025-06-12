@@ -20,7 +20,6 @@ interface ProjectCategory {
   projects: ProjectData[];
 }
 
-// 示例數據 - 可以靈活修改
 const projectCategories: ProjectCategory[] = [
   {
     id: 'main',
@@ -29,19 +28,19 @@ const projectCategories: ProjectCategory[] = [
       {
         id: '1',
         title: 'Lexiread',
-        description: 'AI-powered English Vocabulary Learning Platform',
+        description: 'An interactive language-learning platform that boosts vocabulary through reading, AI-powered word lookup, and quiz-based practice.',
         tags: ['React', 'Next.js', 'Prisma', 'SQLite', 'Tailwind CSS'],
-        date: '2024-01',
+        date: '2025-06',
         url: 'https://github.com/ichexernest/lexiread',
         featured: true
       },
       {
         id: '2',
-        title: 'LIFF Activity Page',
-        description: 'Interactive Event Modules',
-        tags: ['React', 'Canva', 'Tailwind CSS'],
-        date: '2024-01',
-        url: 'https://github.com/ichexernest/spin-the-wheel',
+        title: 'LIFF Event Module',
+        description: 'A modular and customizable framework for LINE marketing campaigns, ideal for brand promotions and interactive events.',
+        tags: ['React', 'Next.js', 'Prisma', 'SQLite', 'Tailwind CSS'],
+        date: '2025-06',
+        url: 'https://github.com/ichexernest/line-event-module',
         featured: true
       },
     ]
